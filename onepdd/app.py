@@ -19,7 +19,7 @@ def load_config() -> Config:
     )
 
 
-async def make_app():
+def make_app():
     config = load_config()
     templates = Jinja2Templates((Path(__file__).parent.parent / "templates").resolve())
     api = FastAPI()

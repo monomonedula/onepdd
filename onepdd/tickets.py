@@ -1,3 +1,4 @@
+import datetime
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -70,8 +71,12 @@ class TicketsSimple(Tickets):
         sha = self.vcs.repo.head_commit_hash or self.vcs.repo.master
         url = self.vcs.puzzle_link_for_commit(sha, file, start, stop)
         return self.templates.get_template(
-            f"{self.vcs.name.lower()}_tickets_body.html"
-        ).render(url=url, puzzle=puzzle)
+            f"{self.vcs.name.lower()}_tickets_body.txt"
+        ).render(
+            url=url,
+            puzzle=puzzle,
+            creation_dt=datetime.datetime.fromisoformat(puzzle.time),
+        )
 
     @property
     def users(self) -> list[str]:
