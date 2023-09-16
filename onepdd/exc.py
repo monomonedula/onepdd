@@ -1,0 +1,2 @@
+class OnePddError(Exception):
+    pass
