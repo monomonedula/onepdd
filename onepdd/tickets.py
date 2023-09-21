@@ -41,7 +41,7 @@ class TicketsSimple(Tickets):
         return issue
 
     def title(self, puzzle: StoredPuzzle) -> str:
-        yaml = self.vcs.config
+        yaml = self.vcs.repo.config
         fmt = []
         if yaml.get("format") and isinstance(yaml["format"], list):
             fmt = [i.lower().strip() for i in yaml["format"]]
@@ -53,7 +53,7 @@ class TicketsSimple(Tickets):
         if "short-title" in fmt:
             return truncated(puzzle.body, length)
         subject = Path(puzzle.file).name
-        start, stop = puzzle.lines[0].split("-")
+        start, stop = puzzle.lines.split("-")
         return truncated(
             " ".join(
                 [
@@ -62,7 +62,8 @@ class TicketsSimple(Tickets):
                     (start if start == stop else f"{start}-{stop}"),
                     f": {puzzle.body}",
                 ]
-            )
+            ),
+            length=length,
         )
 
     def body(self, puzzle: StoredPuzzle) -> str:
@@ -108,6 +109,6 @@ def truncated(s: str, length: int = 40, tail: str = "...") -> str:
     clean = re.sub(r"\s+", " ", s).strip()
     if len(clean) <= length:
         return clean
-    limit = length - len(tail)
-    stop = clean.rindex(" ", limit) or 0
+    length = length - len(tail)
+    stop = clean.rindex(" ", 0, length) or 0
     return f"{clean[:stop]}{tail}"
