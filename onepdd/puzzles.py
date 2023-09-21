@@ -36,18 +36,19 @@ class Puzzles:
         method join() will be placed to the right positions and will
         either replace existing ones of will become new puzzles.
         """
-        after: list[StoredPuzzle] = deepcopy(before)
-        existing: set[str] = set(p.id for p in after)
-        for puzzle in snapshot:
-            if puzzle.id not in existing:
-                after.append(
-                    StoredPuzzle(
-                        **puzzle.model_dump(),
-                        alive=True,
-                        issue=None,
-                    )
+        existing: set[str] = set(p.id for p in before)
+        return [
+            *deepcopy(before),
+            *[
+                StoredPuzzle(
+                    **puzzle.model_dump(),
+                    alive=True,
+                    issue=None,
                 )
-        return after
+                for puzzle in snapshot
+                if puzzle.id not in existing
+            ],
+        ]
 
     async def expose(self, puzzles: list[StoredPuzzle], tickets: Tickets):
         puzzles = deepcopy(puzzles)
